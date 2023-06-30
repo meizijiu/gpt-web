@@ -2,30 +2,44 @@
 import type { Ref } from 'vue'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { NAutoComplete, NButton, NInput, useDialog, useMessage } from 'naive-ui'
 import html2canvas from 'html2canvas'
-import { t } from '@/locales'
+import { Message } from './components'
 import { useScroll } from './hooks/useScroll'
 import { useChat } from './hooks/useChat'
 import { useUsingContext } from './hooks/useUsingContext'
 import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore, usePromptStore } from '@/store'
+import { t } from '@/locales'
+
+let controller = new AbortController()
+
+const openLongReply = import.meta.env.VITE_GLOB_OPEN_LONG_REPLY === 'true'
 
 const route = useRoute()
 const dialog = useDialog()
 const ms = useMessage()
 
 const chatStore = useChatStore()
+const promptStore = usePromptStore()
 
 const { isMobile } = useBasicLayout()
+const { addChat, updateChat, updateChatSome, getChatByUuidAndIndex } = useChat()
+const { scrollRef, scrollToBottom, scrollToBottomIfAtBottom } = useScroll()
+const { usingContext } = useUsingContext()
 
 const { uuid } = route.params as { uuid: string }
 
 const dataSources = computed(() => chatStore.getChatByUuid(+uuid))
+const conversationList = computed(() => dataSources.value.filter(item => (!item.inversion && !!item.conversationOptions)))
 
 const loading = ref<boolean>(false)
 const prompt = ref<string>('')
+const inputRef = ref<Ref | null>(null)
+
+const { promptList: promptTemplate } = storeToRefs<any>(promptStore)
 
 const footerClass = computed(() => {
   let classes = ['p-4']
@@ -84,6 +98,17 @@ function toggleUsingContext() {}
 function handleSubmit() {}
 
 function handleEnter() {}
+
+onMounted(() => {
+  scrollToBottom()
+  if (inputRef.value && !isMobile.value)
+    inputRef.value?.focus()
+})
+
+onUnmounted(() => {
+  if (loading.value)
+    controller.abort()
+})
 </script>
 
 <template>
