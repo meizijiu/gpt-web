@@ -1,3 +1,4 @@
+import * as dotenv from 'dotenv'
 import 'isomorphic-fetch'
 import type { ChatGPTAPIOptions } from 'chatgpt'
 import { ChatGPTAPI, ChatGPTUnofficialProxyAPI } from 'chatgpt'
@@ -7,6 +8,10 @@ import fetch from 'node-fetch'
 import { isNotEmptyString } from '../utils/is'
 import type { ApiModel, ChatGPTUnofficialProxyAPIOptions } from '../types'
 import type { SetProxyOptions } from './types'
+
+const { HttpsProxyAgent } = httpsProxyAgent
+
+dotenv.config()
 
 const disableDebug: boolean = process.env.OPENAI_API_DISABLE_DEBUG === 'true'
 

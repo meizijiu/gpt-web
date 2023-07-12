@@ -23,6 +23,16 @@ const routes: RouteRecordRaw[] = [
     name: '404',
     component: () => import('@/views/exception/404/index.vue'),
   },
+  {
+    path: '/500',
+    name: '500',
+    component: () => import('@/views/exception/500/index.vue'),
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'notFound',
+    redirect: '/404',
+  },
 ]
 
 export const router = createRouter({
