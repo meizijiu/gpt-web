@@ -5,3 +5,9 @@ export function fetchSession<T>() {
     url: '/session',
   })
 }
+
+export function fetchChatConfig<T = any>() {
+  return post<T>({
+    url: '/config',
+  })
+}

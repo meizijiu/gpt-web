@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { getLocalState, setLocalState } from './helper'
+import { router } from '@/router'
 
 export const useChatStore = defineStore('chat-store', {
   state: (): Chat.ChatState => getLocalState(),
@@ -25,6 +26,13 @@ export const useChatStore = defineStore('chat-store', {
     setUsingContext(context: boolean) {
       this.usingContext = context
       this.recordState()
+    },
+
+    addHistory(history: Chat.History, chatData: Chat.Chat[] = []) {
+      this.history.unshift(history)
+      this.chat.unshift({ uuid: history.uuid, data: chatData })
+      this.active = history.uuid
+      this.reloadRoute(history.uuid)
     },
 
     getChatByUuidAndIndex(uuid: number, index: number) {
@@ -99,6 +107,11 @@ export const useChatStore = defineStore('chat-store', {
 
     recordState() {
       setLocalState(this.$state)
+    },
+
+    async reloadRoute(uuid: number) {
+      this.recordState()
+      await router.push({ name: 'Chat', params: { uuid } })
     },
   },
 })

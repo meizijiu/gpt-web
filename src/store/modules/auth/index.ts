@@ -43,7 +43,6 @@ export const useAuthStore = defineStore('auth-store', {
         return Promise.resolve(data)
       }
       catch (error) {
-        console.log(error)
         return Promise.reject(error)
       }
     },
